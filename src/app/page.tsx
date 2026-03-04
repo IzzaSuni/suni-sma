@@ -268,7 +268,7 @@ export default function Home() {
             transition={{ delay: 0.1 }}
             className="text-gray-400 mb-10 max-w-xl mx-auto text-lg leading-relaxed"
           >
-            I'm always open to discussing new projects, creative ideas or opportunities to be part of your visions.
+            I&apos;m always open to discussing new projects, creative ideas or opportunities to be part of your visions.
           </motion.p>
           <motion.a 
             initial={{ opacity: 0, scale: 0.9 }}
