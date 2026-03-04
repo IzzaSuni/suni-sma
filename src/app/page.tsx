@@ -1,297 +1,219 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Mail, Linkedin, Github } from 'lucide-react';
+import { Mail, Linkedin, Github, ExternalLink, ArrowRight } from 'lucide-react';
+import Head from 'next/head';
 
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
-};
-
-const staggerContainer = {
+// --- Animations ---
+const containerVar = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.2
-    }
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 }
   }
 };
 
-const ExperienceItem = ({ role, company, period, description, skills }: { role: string, company: string, period: string, description: string, skills?: string[] }) => (
-  <motion.div 
-    variants={fadeIn}
-    className="mb-10 relative pl-8 border-l-2 border-gray-200 last:mb-0"
+const itemVar = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { type: "spring", stiffness: 50, damping: 15 } 
+  }
+};
+
+// --- Data ---
+const skills = {
+  frontend: ['React', 'Next.js', 'TypeScript', 'Tailwind', 'Redux', 'Vite', 'Framer Motion'],
+  backend: ['Node.js', 'Go (Golang)', 'Ruby on Rails', 'PostgreSQL', 'MongoDB', 'Docker', 'IoT']
+};
+
+const experiences = [
+  {
+    role: "Product Engineer (Frontend)",
+    company: "Rakamin",
+    period: "2023 - Present",
+    desc: "Building scalable LMS & career platforms. Leading frontend initiatives."
+  },
+  {
+    role: "Fullstack AI Engineer",
+    company: "Brandrev.AI",
+    period: "2024",
+    desc: "Migrated AI systems, implemented RAG & real-time search capabilities."
+  },
+  {
+    role: "Fullstack Developer",
+    company: "MyMedica",
+    period: "2022 - Present",
+    desc: "Developing healthcare management systems with Go & Next.js."
+  }
+];
+
+const projects = [
+  { title: "Rakamin Academy", desc: "EdTech Platform", link: "https://rakamin.com" },
+  { title: "Brandrev.AI", desc: "AI Branding Tool", link: "https://app.brandrev.ai" },
+  { title: "MyMedica", desc: "Healthcare App", link: "https://app.mymedica.id" },
+  { title: "By.U", desc: "Digital Telco Site", link: "https://byu.id" },
+  { title: "Smart Attendance", desc: "IoT System", link: "#" }, // Placeholder if no link
+  { title: "Career Portals", desc: "Multiple Enterprise Sites", link: "#" }
+];
+
+// --- Components ---
+const SkillTag = ({ name, type }: { name: string, type: 'front' | 'back' }) => (
+  <motion.span 
+    whileHover={{ scale: 1.1, rotate: 2 }}
+    className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-colors cursor-default ${
+      type === 'front' 
+        ? 'bg-blue-500/10 text-blue-300 border-blue-500/20 hover:border-blue-400' 
+        : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20 hover:border-emerald-400'
+    }`}
   >
-    <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 border-4 border-white shadow-sm"></div>
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
-      <h3 className="text-xl font-bold text-gray-900">{role}</h3>
-      <span className="text-sm text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full border border-blue-100">{period}</span>
-    </div>
-    <p className="text-lg text-gray-700 font-medium mb-3">{company}</p>
-    <p className="text-gray-600 mb-4 leading-relaxed whitespace-pre-line">{description}</p>
-    {skills && (
-      <div className="flex flex-wrap gap-2">
-        {skills.map(skill => (
-          <span key={skill} className="text-xs font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full border border-gray-200 hover:bg-gray-200 transition-colors">
-            {skill}
-          </span>
-        ))}
-      </div>
-    )}
-  </motion.div>
+    {name}
+  </motion.span>
 );
 
-const ProjectCard = ({ title, desc, link }: { title: string, desc: string, link?: string }) => (
-  <motion.div 
-    variants={fadeIn}
-    whileHover={{ y: -5 }}
-    className="p-6 rounded-2xl border border-gray-200 hover:border-blue-400 hover:shadow-lg transition-all bg-white group h-full flex flex-col"
+const ProjectCard = ({ title, desc, link }: { title: string, desc: string, link: string }) => (
+  <motion.a 
+    href={link}
+    target="_blank"
+    rel="noopener noreferrer"
+    variants={itemVar}
+    whileHover={{ y: -5, scale: 1.02 }}
+    whileTap={{ scale: 0.98 }}
+    className="group block p-4 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 hover:border-blue-500/50 rounded-xl transition-all relative overflow-hidden"
   >
-    <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">{title}</h4>
-    <p className="text-gray-600 flex-grow leading-relaxed">{desc}</p>
-    {link && (
-      <a href={link} target="_blank" rel="noreferrer" className="text-sm text-blue-600 mt-4 inline-flex items-center font-semibold hover:underline">
-        View Project 
-        <svg className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-        </svg>
-      </a>
-    )}
-  </motion.div>
+    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/10 group-hover:to-purple-500/10 transition-all duration-500"></div>
+    <div className="flex justify-between items-start mb-2 relative z-10">
+      <h3 className="font-bold text-slate-100 group-hover:text-blue-400 transition-colors">{title}</h3>
+      <ExternalLink size={14} className="text-slate-500 group-hover:text-blue-400 transition-colors" />
+    </div>
+    <p className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">{desc}</p>
+  </motion.a>
 );
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-900 selection:bg-blue-100 selection:text-blue-900">
+    <>
+      <title>Akbar Izza Mahendra Suni - Software Engineer</title>
+      <meta name="description" content="Fullstack Software Engineer specializing in React, Next.js, Node.js, and Golang. Based in Indonesia." />
       
-      {/* Hero Section */}
-      <header className="bg-white border-b border-gray-200 relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] pointer-events-none"></div>
-        <div className="max-w-5xl mx-auto px-6 py-20 md:py-32 relative z-10">
-          <motion.div 
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-            className="flex flex-col md:flex-row items-center gap-10 md:gap-16"
-          >
-            <motion.div variants={fadeIn} className="relative group">
-              <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-5xl text-white font-bold shadow-2xl transform group-hover:scale-105 transition-transform duration-300 ring-4 ring-white">
+      <div className="min-h-screen bg-slate-950 text-slate-200 selection:bg-blue-500/30 selection:text-blue-200 p-4 md:p-8 lg:p-12 flex items-center justify-center">
+        
+        {/* Background Gradients */}
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 rounded-full blur-[120px]"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[120px]"></div>
+        </div>
+
+        <motion.main 
+          initial="hidden"
+          animate="visible"
+          variants={containerVar}
+          className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 relative z-10"
+        >
+          
+          {/* LEFT COLUMN: Hero & Contact (Sticky on Desktop) */}
+          <motion.aside className="lg:col-span-4 lg:sticky lg:top-12 h-fit space-y-6">
+            <motion.div variants={itemVar} className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 p-6 rounded-3xl shadow-2xl">
+              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-4xl font-bold text-white mb-6 shadow-lg shadow-blue-500/20">
                 AS
               </div>
-              <motion.div 
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.5, type: "spring" }}
-                className="absolute bottom-2 right-2 w-10 h-10 bg-green-500 border-4 border-white rounded-full shadow-md"
-                title="Available for hire"
-              ></motion.div>
-            </motion.div>
-            
-            <div className="text-center md:text-left flex-1">
-              <motion.h1 variants={fadeIn} className="text-5xl md:text-6xl font-extrabold text-gray-900 tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
-                Akbar Izza Mahendra Suni
-              </motion.h1>
-              <motion.p variants={fadeIn} className="text-2xl text-blue-600 font-medium mb-6">Software Engineer (Fullstack)</motion.p>
-              <motion.p variants={fadeIn} className="text-xl text-gray-600 max-w-2xl leading-relaxed mb-8">
-                Specializing in full-stack development, delivering clean, maintainable, and scalable code. 
-                Skilled in building robust web applications with modern frameworks.
-              </motion.p>
               
-              <motion.div variants={fadeIn} className="flex flex-wrap justify-center md:justify-start gap-4">
-                <a href="mailto:akbarizza09@gmail.com" className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 font-medium">
-                  <Mail className="w-5 h-5" /> Email Me
-                </a>
-                <div className="flex gap-3">
-                  <a href="#" className="p-3 text-gray-600 hover:text-blue-600 transition-all border border-gray-200 rounded-full hover:border-blue-200 hover:bg-blue-50 hover:-translate-y-0.5">
-                    <Linkedin className="w-5 h-5" />
-                  </a>
-                  <a href="#" className="p-3 text-gray-600 hover:text-gray-900 transition-all border border-gray-200 rounded-full hover:border-gray-400 hover:bg-gray-50 hover:-translate-y-0.5">
-                    <Github className="w-5 h-5" />
-                  </a>
+              <h1 className="text-3xl font-bold text-white tracking-tight mb-2">
+                Akbar Izza<br/>Mahendra Suni
+              </h1>
+              <h2 className="text-lg text-blue-400 font-medium mb-4">Software Engineer</h2>
+              
+              <p className="text-slate-400 text-sm leading-relaxed mb-6">
+                Specializing in robust full-stack solutions. Delivering clean code & scalable architecture. 
+                Focus on React, Go, & Modern Web.
+              </p>
+
+              <div className="flex gap-3">
+                <motion.a whileHover={{ y: -3 }} href="https://linkedin.com/in/akbar-suni/" target="_blank" className="p-2.5 bg-slate-800 hover:bg-[#0077b5] text-slate-400 hover:text-white rounded-xl transition-all border border-slate-700 hover:border-[#0077b5]">
+                  <Linkedin size={20} />
+                </motion.a>
+                <motion.a whileHover={{ y: -3 }} href="https://github.com/IzzaSuni" target="_blank" className="p-2.5 bg-slate-800 hover:bg-[#333] text-slate-400 hover:text-white rounded-xl transition-all border border-slate-700 hover:border-[#333]">
+                  <Github size={20} />
+                </motion.a>
+                <motion.a whileHover={{ y: -3 }} href="mailto:akbarizza09@gmail.com" className="p-2.5 bg-slate-800 hover:bg-blue-600 text-slate-400 hover:text-white rounded-xl transition-all border border-slate-700 hover:border-blue-600 flex-1 flex items-center justify-center gap-2 font-medium">
+                  <Mail size={18} /> <span>Email Me</span>
+                </motion.a>
+              </div>
+            </motion.div>
+
+            {/* Status Card */}
+            <motion.div variants={itemVar} className="bg-slate-900/50 backdrop-blur-sm border border-slate-800 p-4 rounded-2xl flex items-center gap-3">
+              <div className="relative">
+                <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
+                <div className="absolute inset-0 bg-emerald-500 rounded-full animate-ping opacity-75"></div>
+              </div>
+              <span className="text-sm text-slate-300">Open to new opportunities</span>
+            </motion.div>
+          </motion.aside>
+
+          {/* RIGHT COLUMN: Content */}
+          <div className="lg:col-span-8 space-y-6">
+            
+            {/* Experience Section */}
+            <motion.section variants={itemVar} className="bg-slate-900/40 backdrop-blur-md border border-slate-800/50 p-6 md:p-8 rounded-3xl">
+              <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                <span className="text-blue-500">⚡</span> Experience
+              </h3>
+              <div className="space-y-8">
+                {experiences.map((exp, idx) => (
+                  <div key={idx} className="relative pl-6 border-l border-slate-700 last:border-0 pb-1">
+                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-slate-900 border-2 border-blue-500"></div>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline mb-1">
+                      <h4 className="font-bold text-slate-200">{exp.role}</h4>
+                      <span className="text-xs text-slate-500 font-mono bg-slate-800/50 px-2 py-0.5 rounded">{exp.period}</span>
+                    </div>
+                    <div className="text-blue-400 text-sm font-medium mb-2">{exp.company}</div>
+                    <p className="text-sm text-slate-400 leading-relaxed">{exp.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </motion.section>
+
+            {/* Projects Grid */}
+            <motion.section variants={itemVar}>
+              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2 px-2">
+                <span className="text-purple-500">🚀</span> Projects
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {projects.map((proj, idx) => (
+                  <ProjectCard key={idx} {...proj} />
+                ))}
+              </div>
+            </motion.section>
+
+            {/* Skills */}
+            <motion.section variants={itemVar} className="bg-slate-900/40 backdrop-blur-md border border-slate-800/50 p-6 rounded-3xl">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">Frontend</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {skills.frontend.map(s => <SkillTag key={s} name={s} type="front" />)}
+                  </div>
                 </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-6 py-20 space-y-24">
-        
-        {/* Skills Section */}
-        <motion.section 
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={staggerContainer}
-        >
-          <motion.h2 variants={fadeIn} className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-            <span className="w-10 h-1.5 bg-blue-600 rounded-full"></span>
-            Technical Expertise
-          </motion.h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <motion.div variants={fadeIn} className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <span className="text-blue-500">⚛️</span> Frontend & Mobile
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {['React.js', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Material UI', 'Vite', 'Redux', 'React Query'].map(s => (
-                  <span key={s} className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm font-semibold border border-blue-100 hover:bg-blue-100 transition-colors cursor-default">
-                    {s}
-                  </span>
-                ))}
+                <div>
+                  <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">Backend & Tools</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {skills.backend.map(s => <SkillTag key={s} name={s} type="back" />)}
+                  </div>
+                </div>
               </div>
-            </motion.div>
-            <motion.div variants={fadeIn} className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <span className="text-green-500">🛠️</span> Backend & Others
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {['Node.js', 'Go (Golang)', 'Ruby on Rails', 'MongoDB', 'PostgreSQL', 'NestJS', 'Docker', 'IoT/Embedded'].map(s => (
-                  <span key={s} className="px-4 py-2 bg-green-50 text-green-700 rounded-lg text-sm font-semibold border border-green-100 hover:bg-green-100 transition-colors cursor-default">
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </motion.section>
+            </motion.section>
 
-        {/* Experience Section */}
-        <motion.section 
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={staggerContainer}
-        >
-          <motion.h2 variants={fadeIn} className="text-3xl font-bold text-gray-900 mb-10 flex items-center gap-3">
-             <span className="w-10 h-1.5 bg-blue-600 rounded-full"></span>
-            Work Experience
-          </motion.h2>
-          <div className="bg-white p-8 md:p-10 rounded-3xl border border-gray-200 shadow-sm">
-            <ExperienceItem 
-              role="Product Engineer (Frontend)"
-              company="Rakamin"
-              period="Jan 2023 – Present"
-              description={`Developed and enhanced features for the Learning Management System (LMS).
-              Translated UI/UX designs into responsive, pixel-perfect front-end components.
-              Led and mentored junior developers, providing technical guidance.`}
-              skills={['React.js', 'Next.js', 'TypeScript', 'Playwright']}
-            />
-             <ExperienceItem 
-              role="Fullstack AI Engineer"
-              company="Brandrev.AI [Freelance]"
-              period="May 2024 – Aug 2024"
-              description={`Migrated AI platform integration from OpenAI API to OpenRouter.
-              Enabled web search capabilities to enhance AI responses with real-time information.`}
-              skills={['Next.js', 'Ruby on Rails', 'OpenRouter', 'RAG']}
-            />
-            <ExperienceItem 
-              role="Fullstack Developer"
-              company="MyMedica [Freelance]"
-              period="Nov 2022 – Present"
-              description={`Handled daily bug fixes and maintained legacy codebase.
-              Enhanced user experience (UX) through UI improvements and performance optimization.`}
-              skills={['Next.js', 'Go (Gin)', 'Tailwind CSS']}
-            />
-            <ExperienceItem 
-              role="Frontend Developer"
-              company="By.U [Freelance]"
-              period="Mar 2022 – Aug 2023"
-              description={`Developed and maintained By.U’s in-house web applications and main website.
-              Collaborated within an Agile team environment to deliver features on time.`}
-              skills={['React.js', 'Next.js', 'Redux', 'SCSS']}
-            />
-          </div>
-        </motion.section>
+            {/* Footer */}
+            <motion.footer variants={itemVar} className="text-center pt-8 pb-4 text-slate-600 text-sm">
+              <p>&copy; {new Date().getFullYear()} Akbar Izza Mahendra Suni.</p>
+              <p>Built with Next.js & Tailwind.</p>
+            </motion.footer>
 
-        {/* Projects Section */}
-        <motion.section 
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={staggerContainer}
-        >
-          <motion.h2 variants={fadeIn} className="text-3xl font-bold text-gray-900 mb-10 flex items-center gap-3">
-             <span className="w-10 h-1.5 bg-blue-600 rounded-full"></span>
-            Featured Projects
-          </motion.h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <ProjectCard 
-              title="Rakamin Academy LMS"
-              desc="Comprehensive Learning Management System and career platform."
-              link="https://rakamin.com"
-            />
-            <ProjectCard 
-              title="Brandrev.AI"
-              desc="AI-powered branding platform with RAG & web search capabilities."
-              link="https://app.brandrev.ai"
-            />
-            <ProjectCard 
-              title="MyMedica"
-              desc="Healthcare management application handling patient data and appointments."
-              link="https://app.mymedica.id"
-            />
-            <ProjectCard 
-              title="By.U Official Site"
-              desc="Main official website for By.U digital provider."
-              link="https://byu.id"
-            />
-             <ProjectCard 
-              title="Career Portals (Multiple)"
-              desc="Developed career sites for Toyota, Bulog, Pos Indonesia, and InJourney."
-            />
-             <ProjectCard 
-              title="Smart Attendance System"
-              desc="IoT-enabled smart room system using ESP32 & Next.js (Thesis Project)."
-            />
           </div>
-        </motion.section>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-20 mt-20 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
-        <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold mb-6"
-          >
-            Interested in collaborating?
-          </motion.h2>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-gray-400 mb-10 max-w-xl mx-auto text-lg leading-relaxed"
-          >
-            I&apos;m always open to discussing new projects, creative ideas or opportunities to be part of your visions.
-          </motion.p>
-          <motion.a 
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            href="mailto:akbarizza09@gmail.com" 
-            className="inline-block px-10 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all shadow-lg hover:shadow-blue-500/30"
-          >
-            Get In Touch
-          </motion.a>
-          
-          <div className="mt-16 pt-8 border-t border-gray-800 text-sm text-gray-500 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>&copy; {new Date().getFullYear()} Akbar Izza Mahendra Suni. All rights reserved.</div>
-            <div className="flex gap-6">
-              <a href="#" className="hover:text-white transition-colors">GitHub</a>
-              <a href="#" className="hover:text-white transition-colors">LinkedIn</a>
-              <a href="#" className="hover:text-white transition-colors">Email</a>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
+        </motion.main>
+      </div>
+    </>
   );
 }
